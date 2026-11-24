@@ -1,0 +1,5 @@
+{
+  "files.associations": { "*.html.twig": "twig" },
+  "emmet.includeLanguages": { "twig": "html" },
+  "tailwindCSS.includeLanguages": { "twig": "html" }
+}
