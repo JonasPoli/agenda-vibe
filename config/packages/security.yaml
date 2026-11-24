@@ -5,7 +5,12 @@ security:
 
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
-        users_in_memory: { memory: null }
+        # Usuários do banco, identificados pelo e-mail.
+        # Para criar um administrador: php bin/console app:admin:criar
+        usuarios:
+            entity:
+                class: App\Entity\Usuario
+                property: email
 
     firewalls:
         dev:
@@ -14,7 +19,26 @@ security:
             security: false
         main:
             lazy: true
-            provider: users_in_memory
+            provider: usuarios
+            user_checker: App\Security\AdminUserChecker
+            form_login:
+                login_path: admin_login
+                check_path: admin_login
+                username_parameter: email
+                password_parameter: senha
+                default_target_path: admin_dashboard
+                enable_csrf: true
+            logout:
+                path: admin_logout
+                target: admin_login
+            # Bloqueia por alguns minutos após 5 tentativas erradas (por e-mail + IP).
+            login_throttling:
+                max_attempts: 5
+                interval: '15 minutes'
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 1209600 # 14 dias
+                signature_properties: [password]
 
             # Activate different ways to authenticate:
             # https://symfony.com/doc/current/security.html#the-firewall
@@ -24,8 +48,9 @@ security:
 
     # Note: Only the *first* matching rule is applied
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+        # Somente administradores usam o painel. Usuário logado sem ROLE_ADMIN recebe 403.
+        - { path: ^/admin/(login|logout)$, roles: PUBLIC_ACCESS }
+        - { path: ^/admin, roles: ROLE_ADMIN }
 
 when@test:
     security:

@@ -1,0 +1,6 @@
+{# Etiqueta da categoria no admin: bolinha com a cor + nome. Uso: include com {categoria: ...} #}
+<span class="admin-categoria wa-cluster wa-flex-nowrap wa-gap-2xs">
+    <span class="admin-cor" style="--cor: {{ categoria.cor }}"></span>
+    {{ categoria.nome }}
+    {% if not categoria.ativa %}<wa-badge variant="neutral" appearance="outlined">inativa</wa-badge>{% endif %}
+</span>

@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Evento não encontrado · {{ nome_site }}{% endblock %}
+
+{% block stylesheets %}
+    <meta name="robots" content="noindex">
+{% endblock %}
+
+{% block body %}
+    {% include 'site/_nao_encontrado.html.twig' with {
+        titulo: 'Evento não encontrado',
+        texto: 'Este evento não está mais disponível na agenda. Ele pode ter sido cancelado, encerrado ou mudado de endereço.',
+        sugestoes: sugestoes,
+    } %}
+{% endblock %}

@@ -1,5 +1,9 @@
 twig:
     file_name_pattern: '*.twig'
+    globals:
+        # Versão do Web Awesome carregada pela CDN na área administrativa.
+        webawesome_version: '3.15.0'
+        nome_site: 'Agenda Vibe'
 
 when@test:
     twig:

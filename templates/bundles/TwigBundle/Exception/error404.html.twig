@@ -1,0 +1,18 @@
+{#
+    404 genérico do site (qualquer endereço inexistente), no layout do site.
+    Só aparece em produção; no ambiente dev, visualize em /_error/404.
+#}
+{% extends 'base.html.twig' %}
+
+{% block title %}Página não encontrada · {{ nome_site }}{% endblock %}
+
+{% block stylesheets %}
+    <meta name="robots" content="noindex">
+{% endblock %}
+
+{% block body %}
+    {% include 'site/_nao_encontrado.html.twig' with {
+        titulo: 'Página não encontrada',
+        texto: 'O endereço que você acessou não existe ou não está mais disponível. Confira a agenda para ver o que vem por aí.',
+    } %}
+{% endblock %}

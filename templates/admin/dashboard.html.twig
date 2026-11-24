@@ -1,0 +1,92 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Painel{% endblock %}
+
+{% block body %}
+    <div class="wa-split">
+        <div class="wa-stack wa-gap-3xs">
+            <h1 class="wa-heading-xl">Painel</h1>
+            <p class="wa-caption-l">Resumo da agenda de eventos.</p>
+        </div>
+        <wa-button variant="brand" href="{{ path('admin_evento_novo') }}">
+            <wa-icon slot="start" name="plus"></wa-icon> Novo evento
+        </wa-button>
+    </div>
+
+    <div class="wa-grid wa-gap-l">
+        <wa-card>
+            <div class="wa-stack wa-gap-2xs">
+                <span class="wa-caption-m"><wa-icon name="calendar-check"></wa-icon> Próximos</span>
+                <span class="admin-numero">{{ proximos }}</span>
+                <span class="wa-caption-s">eventos que ainda vão acontecer</span>
+            </div>
+        </wa-card>
+        <wa-card>
+            <div class="wa-stack wa-gap-2xs">
+                <span class="wa-caption-m"><wa-icon name="toggle-off"></wa-icon> Inativos</span>
+                <span class="admin-numero">{{ inativos }}</span>
+                <span class="wa-caption-s"><a href="{{ path('admin_evento_index', {situacao: 'inativos'}) }}">eventos fora do site</a></span>
+            </div>
+        </wa-card>
+        <wa-card>
+            <div class="wa-stack wa-gap-2xs">
+                <span class="wa-caption-m"><wa-icon name="layer-group"></wa-icon> Total</span>
+                <span class="admin-numero">{{ total }}</span>
+                <span class="wa-caption-s">eventos cadastrados</span>
+            </div>
+        </wa-card>
+    </div>
+
+    <wa-card>
+        <div slot="header" class="wa-split">
+            <h2 class="wa-heading-m"><wa-icon name="star" class="admin-estrela"></wa-icon> Destaques da home</h2>
+            <wa-badge variant="{{ destaques|length >= constant('App\\Entity\\Evento::MAX_DESTAQUES') ? 'warning' : 'neutral' }}" appearance="outlined">
+                {{ destaques|length }} de {{ constant('App\\Entity\\Evento::MAX_DESTAQUES') }}
+            </wa-badge>
+        </div>
+        {% if destaques is empty %}
+            <p class="wa-caption-l">Nenhum evento em destaque. Use a estrela na <a href="{{ path('admin_evento_index') }}">lista de eventos</a> para destacar.</p>
+        {% else %}
+            <div class="wa-stack wa-gap-s">
+                {% for evento in destaques %}
+                    <div class="wa-split">
+                        <span class="wa-cluster wa-gap-xs">
+                            <a href="{{ path('admin_evento_editar', {id: evento.id}) }}"><strong>{{ evento.titulo }}</strong></a>
+                            <span class="wa-caption-m">{{ evento.inicio|format_datetime('medium', 'short') }}</span>
+                        </span>
+                        {% if not evento.visivelNoSite %}
+                            <wa-badge variant="warning" appearance="outlined">fora do site ({{ not evento.ativo ? 'evento inativo' : 'categoria inativa' }})</wa-badge>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </wa-card>
+
+    <wa-card>
+        <div slot="header" class="wa-split">
+            <h2 class="wa-heading-m">Próximos no site</h2>
+            <wa-button appearance="plain" size="s" href="{{ path('admin_evento_index') }}">Ver todos</wa-button>
+        </div>
+
+        {% if agenda is empty %}
+            <p class="wa-caption-l">Nenhum evento ativo com data futura.</p>
+        {% else %}
+            <div class="wa-stack wa-gap-m">
+                {% for evento in agenda %}
+                    {% if not loop.first %}<wa-divider></wa-divider>{% endif %}
+                    <div class="wa-flank wa-gap-m">
+                        <wa-avatar initials="{{ evento.inicio|date('d') }}" shape="rounded" label="Dia {{ evento.inicio|date('d') }}"></wa-avatar>
+                        <div class="wa-split">
+                            <div class="wa-stack wa-gap-3xs">
+                                <a href="{{ path('admin_evento_editar', {id: evento.id}) }}"><strong>{{ evento.titulo }}</strong></a>
+                                <span class="wa-caption-m wa-cluster wa-gap-xs">{% include 'admin/_categoria.html.twig' with {categoria: evento.categoria} %} · {{ evento.inicio|format_datetime('medium', 'short') }} · {{ evento.local }}</span>
+                            </div>
+                            <wa-relative-time date="{{ evento.inicio|date('c') }}" lang="pt"></wa-relative-time>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </wa-card>
+{% endblock %}

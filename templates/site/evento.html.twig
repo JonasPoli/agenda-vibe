@@ -1,0 +1,85 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ evento.titulo }} · {{ nome_site }}{% endblock %}
+{% block descricao %}{{ evento.resumo ?: evento.titulo ~ ' em ' ~ evento.local }}{% endblock %}
+
+{% block body %}
+    <article>
+        <header class="bg-tinta text-papel">
+            <div class="mx-auto max-w-6xl px-5 pt-10 pb-16">
+                <a href="{{ path('site_inicio') }}#agenda" class="text-sm font-medium text-papel/60 hover:text-vibe-400">← Voltar para a agenda</a>
+
+                <div class="mt-10 flex flex-col gap-8 sm:flex-row sm:items-end">
+                    {% include 'site/_data.html.twig' with {data: evento.inicio, tamanho: 'lg', escuro: true} %}
+                    <div>
+                        <div class="mb-3 flex flex-wrap items-center gap-2">
+                            {% include 'site/_categoria.html.twig' with {categoria: evento.categoria, escuro: true} %}
+                            {% if evento.jaPassou %}
+                                <span class="rounded-full bg-papel/10 px-2.5 py-0.5 text-xs font-semibold">Este evento já aconteceu</span>
+                            {% endif %}
+                        </div>
+                        <h1 class="font-display text-4xl leading-tight font-extrabold tracking-tight sm:text-6xl">{{ evento.titulo }}</h1>
+                        {% if evento.resumo %}
+                            <p class="mt-4 max-w-2xl text-lg text-papel/75">{{ evento.resumo }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="mx-auto grid max-w-6xl gap-10 px-5 lg:grid-cols-[1fr_20rem]">
+            <div class="pt-12 text-lg leading-relaxed text-tinta/85">
+                {% if evento.descricao %}
+                    {{ evento.descricao|nl2br }}
+                {% else %}
+                    <p class="text-tinta/50">Mais informações em breve.</p>
+                {% endif %}
+            </div>
+
+            <aside class="lg:-mt-8">
+                <dl class="space-y-5 rounded-3xl bg-white p-6 shadow-xl ring-1 ring-tinta/10">
+                    <div>
+                        <dt class="text-xs font-semibold tracking-widest text-vibe-600 uppercase">Quando</dt>
+                        <dd class="mt-1 font-medium first-letter:uppercase">
+                            {{ evento.inicio|format_datetime(pattern: "EEEE, d 'de' MMMM 'de' y") }}<br>
+                            <span class="text-tinta/70">
+                                {{ evento.inicio|format_datetime(pattern: "HH'h'mm") }}
+                                {% if evento.fim %}
+                                    {% if evento.fim|date('Y-m-d') == evento.inicio|date('Y-m-d') %}
+                                        às {{ evento.fim|format_datetime(pattern: "HH'h'mm") }}
+                                    {% else %}
+                                        até {{ evento.fim|format_datetime(pattern: "d 'de' MMMM, HH'h'mm") }}
+                                    {% endif %}
+                                {% endif %}
+                            </span>
+                        </dd>
+                    </div>
+                    <div>
+                        <dt class="text-xs font-semibold tracking-widest text-vibe-600 uppercase">Onde</dt>
+                        <dd class="mt-1 font-medium">{{ evento.local }}</dd>
+                        <dd class="mt-2">
+                            <a href="https://www.google.com/maps/search/?api=1&query={{ evento.local|url_encode }}" target="_blank" rel="noopener" class="text-sm font-semibold text-vibe-600 hover:underline">Abrir no mapa ↗</a>
+                        </dd>
+                    </div>
+                </dl>
+            </aside>
+        </div>
+    </article>
+
+    {% if outros is not empty %}
+        <section class="mx-auto mt-20 max-w-6xl px-5">
+            <h2 class="font-display text-2xl font-bold">Também na agenda</h2>
+            <div class="mt-6 grid gap-5 sm:grid-cols-3">
+                {% for outro in outros|slice(0, 3) %}
+                    <a href="{{ path('site_evento', {slug: outro.slug}) }}" class="group flex gap-4 rounded-3xl bg-white p-5 ring-1 ring-tinta/10 transition hover:-translate-y-1 hover:shadow-lg">
+                        {% include 'site/_data.html.twig' with {data: outro.inicio} %}
+                        <div class="min-w-0">
+                            <h3 class="font-display font-bold group-hover:text-vibe-600">{{ outro.titulo }}</h3>
+                            <p class="mt-1 truncate text-sm text-tinta/60">{{ outro.local }}</p>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+{% endblock %}

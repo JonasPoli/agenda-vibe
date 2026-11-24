@@ -1,0 +1,7 @@
+{# Bloco de data estilo "ingresso": dia grande, mês e dia da semana. #}
+{% set tamanho = tamanho|default('md') %}
+<div class="flex shrink-0 flex-col items-center justify-center rounded-2xl {{ escuro|default(false) ? 'bg-vibe-500 text-white' : 'bg-white text-tinta ring-1 ring-tinta/10' }} {{ tamanho == 'lg' ? 'h-32 w-28' : 'h-20 w-18' }}">
+    <span class="text-xs font-semibold uppercase tracking-widest {{ escuro|default(false) ? 'text-white/80' : 'text-vibe-600' }}">{{ data|format_datetime(pattern: 'MMM')|trim('.') }}</span>
+    <span class="font-display font-extrabold leading-none {{ tamanho == 'lg' ? 'text-6xl' : 'text-4xl' }}">{{ data|format_datetime(pattern: 'd') }}</span>
+    <span class="text-xs font-medium {{ escuro|default(false) ? 'text-white/80' : 'text-tinta/60' }}">{{ data|format_datetime(pattern: 'EEE')|trim('.') }}</span>
+</div>

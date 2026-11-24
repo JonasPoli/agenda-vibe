@@ -1,0 +1,74 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Categorias{% endblock %}
+
+{% block body %}
+    <div class="wa-split">
+        <div class="wa-stack wa-gap-3xs">
+            <h1 class="wa-heading-xl">Categorias</h1>
+            <p class="wa-caption-l">Organizam os eventos e definem a cor das etiquetas.</p>
+        </div>
+        <wa-button variant="brand" href="{{ path('admin_categoria_nova') }}">
+            <wa-icon slot="start" name="plus"></wa-icon> Nova categoria
+        </wa-button>
+    </div>
+
+    <wa-card>
+        {% if linhas is empty %}
+            <div class="wa-stack wa-align-items-center wa-gap-s">
+                <wa-icon name="tags"></wa-icon>
+                <p class="wa-caption-l">Nenhuma categoria cadastrada. Crie a primeira para poder cadastrar eventos.</p>
+            </div>
+        {% else %}
+            <table class="admin-tabela">
+                <thead>
+                    <tr>
+                        <th>Categoria</th>
+                        <th>Cor</th>
+                        <th>Eventos</th>
+                        <th>Situação</th>
+                        <th><span class="wa-visually-hidden">Ações</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for linha in linhas %}
+                        {% set categoria = linha.categoria %}
+                        <tr>
+                            <td>
+                                <a href="{{ path('admin_categoria_editar', {id: categoria.id}) }}" class="admin-categoria wa-cluster wa-gap-2xs">
+                                    <span class="admin-cor" style="--cor: {{ categoria.cor }}"></span>
+                                    <strong>{{ categoria.nome }}</strong>
+                                </a>
+                            </td>
+                            <td><code>{{ categoria.cor }}</code></td>
+                            <td>
+                                <a href="{{ path('admin_evento_index', {categoria: categoria.id}) }}">{{ linha.total }}</a>
+                            </td>
+                            <td>
+                                {% if categoria.ativa %}
+                                    <wa-badge variant="success">Ativa</wa-badge>
+                                {% else %}
+                                    <wa-badge variant="neutral">Inativa</wa-badge>
+                                {% endif %}
+                            </td>
+                            <td class="acoes">
+                                <div class="wa-cluster wa-flex-nowrap wa-gap-2xs wa-justify-content-end">
+                                    <form method="post" action="{{ path('admin_categoria_alternar', {id: categoria.id}) }}">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('alternar' ~ categoria.id) }}">
+                                        <wa-button type="submit" size="s" appearance="plain">
+                                            <wa-icon slot="start" name="{{ categoria.ativa ? 'toggle-on' : 'toggle-off' }}"></wa-icon>
+                                            {{ categoria.ativa ? 'Desativar' : 'Ativar' }}
+                                        </wa-button>
+                                    </form>
+                                    <wa-button size="s" appearance="outlined" href="{{ path('admin_categoria_editar', {id: categoria.id}) }}">
+                                        <wa-icon slot="start" name="pen"></wa-icon> Editar
+                                    </wa-button>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </wa-card>
+{% endblock %}

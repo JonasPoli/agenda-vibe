@@ -1,0 +1,5 @@
+{# Etiqueta da categoria no site. A cor vem do banco pela variável CSS --cor. #}
+<span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold {{ escuro|default(false) ? 'bg-papel/10 text-papel' : 'bg-tinta/5 text-tinta/80' }}" style="--cor: {{ categoria.cor }}">
+    <span class="h-2 w-2 rounded-full bg-(--cor)"></span>
+    {{ categoria.nome }}
+</span>

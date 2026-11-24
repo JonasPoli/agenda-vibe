@@ -3,7 +3,11 @@ framework:
     secret: '%env(APP_SECRET)%'
 
     # Note that the session will be started ONLY if you read or write from it.
-    session: true
+    # Cookie com nome próprio: evita conflito com outros projetos no mesmo host (ex.: 127.0.0.1 em outra porta).
+    session:
+        name: agenda_vibe_sessao
+        cookie_secure: auto
+        cookie_samesite: lax
 
     #esi: true
     #fragments: true

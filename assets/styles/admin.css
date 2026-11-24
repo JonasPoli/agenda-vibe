@@ -1,0 +1,107 @@
+/*
+ * Ajustes da área administrativa (Web Awesome).
+ * Use os tokens --wa-* em vez de valores fixos, para respeitar o tema e o modo escuro.
+ */
+html,
+body {
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+wa-page {
+    --menu-width: 15rem;
+}
+
+wa-page[view='mobile'] {
+    --menu-width: auto;
+}
+
+.admin-marca {
+    font-weight: var(--wa-font-weight-bold);
+    font-size: var(--wa-font-size-l);
+    color: var(--wa-color-text-normal);
+    text-decoration: none;
+}
+
+.admin-nav a {
+    color: var(--wa-color-text-normal);
+    text-decoration: none;
+    padding: var(--wa-space-xs) var(--wa-space-s);
+    border-radius: var(--wa-border-radius-m);
+}
+
+.admin-nav a:hover {
+    background-color: var(--wa-color-neutral-fill-quiet);
+}
+
+.admin-nav a[aria-current='page'] {
+    background-color: var(--wa-color-brand-fill-quiet);
+    color: var(--wa-color-brand-on-quiet);
+    font-weight: var(--wa-font-weight-semibold);
+}
+
+.admin-conteudo {
+    max-width: 72rem;
+}
+
+.admin-numero {
+    font-size: var(--wa-font-size-3xl);
+    font-weight: var(--wa-font-weight-bold);
+    line-height: var(--wa-line-height-condensed);
+}
+
+.admin-tabela {
+    width: 100%;
+}
+
+.admin-tabela td.acoes {
+    text-align: end;
+    white-space: nowrap;
+}
+
+.admin-erro {
+    color: var(--wa-color-danger-on-quiet);
+    font-size: var(--wa-font-size-s);
+}
+
+.admin-login {
+    min-height: 100vh;
+    background-color: var(--wa-color-surface-lowered);
+}
+
+.admin-login wa-card {
+    width: min(100%, 26rem);
+}
+
+.admin-busca {
+    flex: 1 1 20rem;
+    max-width: 28rem;
+}
+
+/* Bolinha com a cor da categoria. A cor vem do banco via --cor (style inline). */
+.admin-cor {
+    display: inline-block;
+    flex-shrink: 0;
+    width: 0.75em;
+    height: 0.75em;
+    border-radius: var(--wa-border-radius-circle);
+    background-color: var(--cor, var(--wa-color-neutral-fill-loud));
+}
+
+.admin-categoria {
+    white-space: nowrap;
+}
+
+.admin-filtros wa-select {
+    min-width: 12rem;
+}
+
+.admin-tabela td.sem-quebra {
+    white-space: nowrap;
+}
+
+/* Estrela de destaque */
+.admin-estrela {
+    color: var(--wa-color-warning-fill-loud);
+}

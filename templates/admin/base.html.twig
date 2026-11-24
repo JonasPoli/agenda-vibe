@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt" class="wa-theme-default wa-palette-default wa-brand-indigo wa-light wa-cloak">
+    <head>
+        <title>{% block title %}Painel{% endblock %} · Admin {{ nome_site }}</title>
+        {% include 'admin/_head.html.twig' %}
+    </head>
+    <body>
+        {% set rota = app.request.attributes.get('_route') %}
+        <wa-page mobile-breakpoint="920">
+            <header slot="header" class="wa-split">
+                <div class="wa-cluster wa-gap-s">
+                    <wa-button data-toggle-nav appearance="plain" class="wa-mobile-only">
+                        <wa-icon name="bars" label="Menu"></wa-icon>
+                    </wa-button>
+                    <a href="{{ path('admin_dashboard') }}" class="admin-marca">
+                        <wa-icon name="calendar-days" variant="regular"></wa-icon> {{ nome_site }}
+                    </a>
+                    <wa-badge variant="neutral" appearance="outlined">admin</wa-badge>
+                </div>
+                <div class="wa-cluster wa-gap-xs">
+                    <wa-button href="{{ path('site_inicio') }}" target="_blank" appearance="plain" size="s">
+                        <wa-icon slot="start" name="arrow-up-right-from-square"></wa-icon> Ver site
+                    </wa-button>
+                    {% if app.user %}
+                        <wa-dropdown>
+                            <wa-button slot="trigger" appearance="outlined" size="s" with-caret>
+                                <wa-icon slot="start" name="user"></wa-icon> {{ app.user.nome }}
+                            </wa-button>
+                            <h3 class="wa-caption-s">{{ app.user.email }}</h3>
+                            <wa-divider></wa-divider>
+                            <wa-dropdown-item href="{{ path('admin_logout') }}">
+                                <wa-icon slot="icon" name="right-from-bracket"></wa-icon> Sair
+                            </wa-dropdown-item>
+                        </wa-dropdown>
+                    {% endif %}
+                </div>
+            </header>
+
+            <nav slot="navigation" class="admin-nav wa-stack wa-gap-2xs">
+                <a href="{{ path('admin_dashboard') }}" data-drawer="close" {% if rota == 'admin_dashboard' %}aria-current="page"{% endif %}>
+                    <wa-icon name="gauge"></wa-icon> Painel
+                </a>
+                <a href="{{ path('admin_evento_index') }}" data-drawer="close" {% if rota starts with 'admin_evento' and rota != 'admin_evento_novo' %}aria-current="page"{% endif %}>
+                    <wa-icon name="calendar"></wa-icon> Eventos
+                </a>
+                <a href="{{ path('admin_evento_novo') }}" data-drawer="close" {% if rota == 'admin_evento_novo' %}aria-current="page"{% endif %}>
+                    <wa-icon name="plus"></wa-icon> Novo evento
+                </a>
+                <a href="{{ path('admin_categoria_index') }}" data-drawer="close" {% if rota starts with 'admin_categoria' %}aria-current="page"{% endif %}>
+                    <wa-icon name="tags"></wa-icon> Categorias
+                </a>
+            </nav>
+
+            <main class="admin-conteudo wa-stack wa-gap-xl">
+                {% for tipo, mensagens in app.flashes %}
+                    {% for mensagem in mensagens %}
+                        <wa-callout variant="{{ tipo == 'success' ? 'success' : (tipo == 'error' ? 'danger' : 'brand') }}">
+                            <wa-icon slot="icon" name="{{ tipo == 'success' ? 'circle-check' : (tipo == 'error' ? 'triangle-exclamation' : 'circle-info') }}"></wa-icon>
+                            {{ mensagem }}
+                        </wa-callout>
+                    {% endfor %}
+                {% endfor %}
+
+                {% block body %}{% endblock %}
+            </main>
+        </wa-page>
+    </body>
+</html>

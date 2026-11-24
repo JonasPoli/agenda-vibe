@@ -1,0 +1,124 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Eventos{% endblock %}
+
+{% block body %}
+    <div class="wa-split">
+        <div class="wa-stack wa-gap-3xs">
+            <h1 class="wa-heading-xl">Eventos</h1>
+            <p class="wa-caption-l">
+                {{ eventos|length }} {{ eventos|length == 1 ? 'evento' : 'eventos' }}{{ filtrando ? ' com os filtros aplicados' }}
+                · <wa-icon name="star"></wa-icon> {{ destaquesVigentes }} de {{ constant('App\\Entity\\Evento::MAX_DESTAQUES') }} destaques em uso
+            </p>
+        </div>
+        <wa-button variant="brand" href="{{ path('admin_evento_novo') }}">
+            <wa-icon slot="start" name="plus"></wa-icon> Novo evento
+        </wa-button>
+    </div>
+
+    <form method="get" action="{{ path('admin_evento_index') }}" class="admin-filtros wa-cluster wa-gap-s wa-align-items-end">
+        <wa-input class="admin-busca" name="q" value="{{ busca }}" placeholder="Buscar por título ou local" with-clear aria-label="Buscar">
+            <wa-icon slot="start" name="magnifying-glass"></wa-icon>
+        </wa-input>
+        <wa-select name="categoria" value="{{ categoriaId }}" placeholder="Todas as categorias" with-clear aria-label="Categoria">
+            {% for categoria in categorias %}
+                <wa-option value="{{ categoria.id }}">
+                    <span slot="start" class="admin-cor" style="--cor: {{ categoria.cor }}"></span>
+                    {{ categoria.nome }}{{ not categoria.ativa ? ' (inativa)' }}
+                </wa-option>
+            {% endfor %}
+        </wa-select>
+        <wa-select name="situacao" value="{{ situacao }}" placeholder="Ativos e inativos" with-clear aria-label="Situação">
+            <wa-option value="ativos">Só ativos</wa-option>
+            <wa-option value="inativos">Só inativos</wa-option>
+            <wa-option value="destaques">Só destaques</wa-option>
+        </wa-select>
+        <wa-button type="submit" appearance="outlined">Filtrar</wa-button>
+        {% if filtrando %}
+            <wa-button appearance="plain" href="{{ path('admin_evento_index') }}">Limpar</wa-button>
+        {% endif %}
+    </form>
+
+    <wa-card>
+        {% if eventos is empty %}
+            <div class="wa-stack wa-align-items-center wa-gap-s">
+                <wa-icon name="calendar-xmark" variant="regular"></wa-icon>
+                <p class="wa-caption-l">{{ filtrando ? 'Nenhum evento encontrado com esses filtros.' : 'Nenhum evento cadastrado ainda.' }}</p>
+            </div>
+        {% else %}
+            <table class="admin-tabela">
+                <thead>
+                    <tr>
+                        <th>Evento</th>
+                        <th>Categoria</th>
+                        <th>Quando</th>
+                        <th>Situação</th>
+                        <th><span class="wa-visually-hidden">Ações</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for evento in eventos %}
+                        <tr>
+                            <td>
+                                <div class="wa-stack wa-gap-3xs">
+                                    <span class="wa-cluster wa-gap-2xs">
+                                        {% if evento.destaque %}<wa-icon name="star" class="admin-estrela" label="Em destaque"></wa-icon>{% endif %}
+                                        <a href="{{ path('admin_evento_editar', {id: evento.id}) }}"><strong>{{ evento.titulo }}</strong></a>
+                                    </span>
+                                    <span class="wa-caption-s"><wa-icon name="location-dot"></wa-icon> {{ evento.local }}</span>
+                                </div>
+                            </td>
+                            <td>{% include 'admin/_categoria.html.twig' with {categoria: evento.categoria} %}</td>
+                            <td class="sem-quebra">{{ evento.inicio|format_datetime('short', 'short') }}</td>
+                            <td>
+                                <div class="wa-cluster wa-gap-2xs">
+                                    {% if evento.ativo %}
+                                        <wa-badge variant="success">Ativo</wa-badge>
+                                    {% else %}
+                                        <wa-badge variant="neutral">Inativo</wa-badge>
+                                    {% endif %}
+                                    {% if evento.jaPassou %}
+                                        <wa-badge variant="warning" appearance="outlined">Encerrado</wa-badge>
+                                    {% endif %}
+                                    {% if evento.ativo and not evento.categoria.ativa %}
+                                        <wa-tooltip for="oculto-{{ evento.id }}">A categoria está inativa, então o evento não aparece no site.</wa-tooltip>
+                                        <wa-icon id="oculto-{{ evento.id }}" name="eye-slash" label="Fora do site"></wa-icon>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td class="acoes">
+                                <div class="wa-cluster wa-flex-nowrap wa-gap-2xs wa-justify-content-end">
+                                    <form method="post" action="{{ path('admin_evento_destacar', {id: evento.id}) }}">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('destacar' ~ evento.id) }}">
+                                        <input type="hidden" name="voltar" value="{{ app.request.requestUri }}">
+                                        <wa-tooltip for="destacar-{{ evento.id }}">{{ evento.destaque ? 'Tirar do destaque' : 'Destacar na home' }}</wa-tooltip>
+                                        <wa-button id="destacar-{{ evento.id }}" type="submit" size="s" appearance="plain">
+                                            <wa-icon name="star" variant="{{ evento.destaque ? 'solid' : 'regular' }}" class="{{ evento.destaque ? 'admin-estrela' : '' }}"
+                                                     label="{{ evento.destaque ? 'Tirar do destaque' : 'Destacar na home' }}"></wa-icon>
+                                        </wa-button>
+                                    </form>
+                                    <form method="post" action="{{ path('admin_evento_alternar', {id: evento.id}) }}">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('alternar' ~ evento.id) }}">
+                                        <input type="hidden" name="voltar" value="{{ app.request.requestUri }}">
+                                        <wa-button type="submit" size="s" appearance="plain">
+                                            <wa-icon slot="start" name="{{ evento.ativo ? 'toggle-on' : 'toggle-off' }}"></wa-icon>
+                                            {{ evento.ativo ? 'Desativar' : 'Ativar' }}
+                                        </wa-button>
+                                    </form>
+                                    {% if evento.visivelNoSite %}
+                                        <wa-button size="s" appearance="plain" href="{{ path('site_evento', {slug: evento.slug}) }}" target="_blank">
+                                            <wa-icon name="eye" label="Ver no site"></wa-icon>
+                                        </wa-button>
+                                    {% endif %}
+                                    <wa-button size="s" appearance="outlined" href="{{ path('admin_evento_editar', {id: evento.id}) }}">
+                                        <wa-icon slot="start" name="pen"></wa-icon> Editar
+                                    </wa-button>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </wa-card>
+{% endblock %}

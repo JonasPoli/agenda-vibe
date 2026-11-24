@@ -1,0 +1,133 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    {# Hero #}
+    <section class="relative overflow-hidden">
+        <div class="pointer-events-none absolute -top-32 -right-24 h-96 w-96 rounded-full bg-vibe-400/30 blur-3xl"></div>
+        <div class="pointer-events-none absolute top-40 -left-32 h-72 w-72 rounded-full bg-vibe-100 blur-3xl"></div>
+
+        <div class="relative mx-auto grid max-w-6xl gap-12 px-5 pt-16 pb-20 lg:grid-cols-[1.2fr_1fr] lg:items-center lg:pt-24">
+            <div>
+                <p class="mb-5 inline-flex items-center gap-2 rounded-full bg-vibe-100 px-3 py-1 text-sm font-semibold text-vibe-700">
+                    <span class="h-2 w-2 animate-pulse rounded-full bg-vibe-500"></span>
+                    Agenda atualizada
+                </p>
+                <h1 class="font-display text-5xl leading-[0.95] font-extrabold tracking-tight sm:text-7xl">
+                    O que vale<br>sair de <span class="text-vibe-500">casa.</span>
+                </h1>
+                <p class="mt-6 max-w-md text-lg text-tinta/70">
+                    Shows, encontros, oficinas e tudo o que está rolando. Escolha o seu próximo programa.
+                </p>
+                <a href="#agenda" class="mt-8 inline-flex items-center gap-2 rounded-full bg-vibe-500 px-6 py-3 font-semibold text-white shadow-lg shadow-vibe-500/30 transition hover:-translate-y-0.5 hover:bg-vibe-600">
+                    Ver a agenda
+                    <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 3a.75.75 0 0 1 .75.75v10.638l3.96-4.158a.75.75 0 1 1 1.08 1.04l-5.25 5.5a.75.75 0 0 1-1.08 0l-5.25-5.5a.75.75 0 1 1 1.08-1.04l3.96 4.158V3.75A.75.75 0 0 1 10 3Z" clip-rule="evenodd"/></svg>
+                </a>
+            </div>
+
+            {% if proximo %}
+                <a href="{{ path('site_evento', {slug: proximo.slug}) }}" class="group relative block rotate-1 rounded-3xl bg-tinta p-7 text-papel shadow-2xl transition hover:rotate-0">
+                    <div class="flex items-center justify-between gap-3">
+                        <p class="text-sm font-semibold tracking-widest text-vibe-400 uppercase">Próximo evento</p>
+                        {% include 'site/_categoria.html.twig' with {categoria: proximo.categoria, escuro: true} %}
+                    </div>
+                    <div class="mt-5 flex gap-5">
+                        {% include 'site/_data.html.twig' with {data: proximo.inicio, tamanho: 'lg', escuro: true} %}
+                        <div class="min-w-0">
+                            <h2 class="font-display text-3xl leading-tight font-bold group-hover:text-vibe-400">{{ proximo.titulo }}</h2>
+                            <p class="mt-2 text-papel/70">{{ proximo.inicio|format_datetime(pattern: "HH'h'mm") }} · {{ proximo.local }}</p>
+                        </div>
+                    </div>
+                    {% if proximo.resumo %}
+                        <p class="mt-6 border-t border-dashed border-papel/20 pt-5 text-papel/80">{{ proximo.resumo }}</p>
+                    {% endif %}
+                </a>
+            {% endif %}
+        </div>
+    </section>
+
+    {# Destaques (máx. 3), escolhidos no admin #}
+    {% if destaques is not empty %}
+        {% set colunas = {1: 'md:grid-cols-1', 2: 'md:grid-cols-2', 3: 'md:grid-cols-2 lg:grid-cols-3'} %}
+        <section id="destaques" class="mx-auto mb-20 max-w-6xl px-5" aria-labelledby="titulo-destaques">
+            <div class="flex items-end justify-between gap-4">
+                <h2 id="titulo-destaques" class="flex items-center gap-3 font-display text-4xl font-extrabold tracking-tight">
+                    <svg class="h-8 w-8 text-vibe-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11.48 3.5a.56.56 0 0 1 1.04 0l2.13 5.11a.56.56 0 0 0 .47.35l5.52.44c.5.04.7.66.32.99l-4.2 3.6a.56.56 0 0 0-.18.56l1.28 5.39a.56.56 0 0 1-.84.61l-4.72-2.88a.56.56 0 0 0-.59 0l-4.73 2.88a.56.56 0 0 1-.84-.61l1.28-5.39a.56.56 0 0 0-.18-.56l-4.2-3.6a.56.56 0 0 1 .32-.99l5.52-.44a.56.56 0 0 0 .47-.35l2.13-5.11Z"/></svg>
+                    Em destaque
+                </h2>
+                <p class="hidden text-tinta/60 sm:block">Os eventos que a gente não quer que você perca.</p>
+            </div>
+
+            <div class="mt-8 grid gap-6 {{ colunas[destaques|length] }}">
+                {% for evento in destaques %}
+                    {# Com 3 destaques em tela média, o primeiro ocupa a linha toda (evita um card sozinho no fim). #}
+                    <a href="{{ path('site_evento', {slug: evento.slug}) }}"
+                       class="group relative flex flex-col overflow-hidden rounded-3xl bg-tinta p-7 text-papel shadow-xl ring-1 ring-tinta transition hover:-translate-y-1 hover:shadow-2xl hover:shadow-vibe-500/20 {{ loop.first and destaques|length == 3 ? 'md:col-span-2 lg:col-span-1' }}">
+                        <div class="pointer-events-none absolute -top-16 -right-16 h-48 w-48 rounded-full bg-vibe-500/30 blur-3xl transition group-hover:bg-vibe-500/50"></div>
+
+                        <div class="relative flex items-center justify-between gap-3">
+                            <span class="inline-flex items-center gap-1.5 rounded-full bg-vibe-500 px-3 py-1 text-xs font-bold tracking-wide text-white uppercase">
+                                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11.48 3.5a.56.56 0 0 1 1.04 0l2.13 5.11a.56.56 0 0 0 .47.35l5.52.44c.5.04.7.66.32.99l-4.2 3.6a.56.56 0 0 0-.18.56l1.28 5.39a.56.56 0 0 1-.84.61l-4.72-2.88a.56.56 0 0 0-.59 0l-4.73 2.88a.56.56 0 0 1-.84-.61l1.28-5.39a.56.56 0 0 0-.18-.56l-4.2-3.6a.56.56 0 0 1 .32-.99l5.52-.44a.56.56 0 0 0 .47-.35l2.13-5.11Z"/></svg>
+                                Destaque
+                            </span>
+                            {% include 'site/_categoria.html.twig' with {categoria: evento.categoria, escuro: true} %}
+                        </div>
+
+                        <div class="relative mt-6 flex gap-5">
+                            {% include 'site/_data.html.twig' with {data: evento.inicio, escuro: true} %}
+                            <div class="min-w-0">
+                                <h3 class="font-display text-2xl leading-tight font-bold group-hover:text-vibe-400">{{ evento.titulo }}</h3>
+                                <p class="mt-2 text-sm text-papel/70">{{ evento.inicio|format_datetime(pattern: "HH'h'mm") }} · {{ evento.local }}</p>
+                            </div>
+                        </div>
+
+                        {% if evento.resumo %}
+                            <p class="relative mt-6 line-clamp-3 text-papel/80">{{ evento.resumo }}</p>
+                        {% endif %}
+
+                        <span class="relative mt-auto inline-flex items-center gap-2 pt-6 text-sm font-semibold text-vibe-400">
+                            Ver detalhes <span class="transition group-hover:translate-x-1" aria-hidden="true">→</span>
+                        </span>
+                    </a>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+
+    {# Agenda agrupada por mês #}
+    <section id="agenda" class="mx-auto max-w-6xl scroll-mt-24 px-5">
+        <h2 class="font-display text-4xl font-extrabold tracking-tight">Próximos eventos</h2>
+
+        {% for mes, eventos in porMes %}
+            <div class="mt-12">
+                <h3 class="sticky top-[72px] z-10 -mx-5 bg-papel/90 px-5 py-2 font-display text-xl font-bold text-vibe-600 backdrop-blur first-letter:uppercase">
+                    {{ (mes ~ '-01')|format_date(pattern: "MMMM 'de' y") }}
+                </h3>
+                <ul class="mt-4 divide-y divide-tinta/10 rounded-3xl bg-white ring-1 ring-tinta/10">
+                    {% for evento in eventos %}
+                        <li>
+                            <a href="{{ path('site_evento', {slug: evento.slug}) }}" class="group flex items-center gap-5 p-5 transition hover:bg-vibe-50 sm:gap-7 sm:p-6">
+                                {% include 'site/_data.html.twig' with {data: evento.inicio} %}
+                                <div class="min-w-0 flex-1">
+                                    <p class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-medium text-tinta/60">
+                                        {% include 'site/_categoria.html.twig' with {categoria: evento.categoria} %}
+                                        <span>{{ evento.inicio|format_datetime(pattern: "HH'h'mm") }} · {{ evento.local }}</span>
+                                    </p>
+                                    <h4 class="mt-1 font-display text-xl font-bold group-hover:text-vibe-600 sm:text-2xl">{{ evento.titulo }}</h4>
+                                    {% if evento.resumo %}
+                                        <p class="mt-1 line-clamp-2 text-tinta/70">{{ evento.resumo }}</p>
+                                    {% endif %}
+                                </div>
+                                <span class="hidden h-11 w-11 shrink-0 items-center justify-center rounded-full bg-papel transition group-hover:bg-vibe-500 group-hover:text-white sm:flex" aria-hidden="true">→</span>
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% else %}
+            <div class="mt-10 rounded-3xl border-2 border-dashed border-tinta/15 p-12 text-center">
+                <p class="font-display text-2xl font-bold">Nenhum evento marcado por enquanto.</p>
+                <p class="mt-2 text-tinta/60">Volte em breve: a agenda está sendo preparada.</p>
+            </div>
+        {% endfor %}
+    </section>
+{% endblock %}

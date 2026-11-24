@@ -1,0 +1,16 @@
+{# <head> comum do admin e do login: Web Awesome pela CDN + entrypoint "admin" (sem Tailwind). #}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><rect width=%2264%22 height=%2264%22 rx=%2216%22 fill=%22%234f46e5%22/><text x=%2232%22 y=%2244%22 font-size=%2234%22 font-family=%22sans-serif%22 font-weight=%22700%22 text-anchor=%22middle%22 fill=%22white%22>a</text></svg>">
+{# Muda entre site e admin força recarga completa no Turbo (CSS e JS diferentes). #}
+<meta name="agenda-area" content="admin" data-turbo-track="reload">
+<link rel="stylesheet" href="https://ka-f.webawesome.com/webawesome@{{ webawesome_version }}/styles/webawesome.css">
+<script type="module" src="https://ka-f.webawesome.com/webawesome@{{ webawesome_version }}/webawesome.loader.js"></script>
+<script type="module" src="https://ka-f.webawesome.com/webawesome@{{ webawesome_version }}/translations/pt.js"></script>
+<script type="module">
+    {# Registra os componentes antes de o Turbo mostrar a nova página (evita "piscar"). #}
+    import { preventTurboFouce } from 'https://ka-f.webawesome.com/webawesome@{{ webawesome_version }}/webawesome.js';
+    preventTurboFouce();
+</script>
+{{ importmap('admin') }}

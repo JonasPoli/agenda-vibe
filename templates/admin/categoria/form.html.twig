@@ -1,0 +1,45 @@
+{% extends 'admin/base.html.twig' %}
+{% form_theme form 'admin/_form_theme.html.twig' %}
+
+{% set editando = categoria.id is not null %}
+
+{% block title %}{{ editando ? 'Editar categoria' : 'Nova categoria' }}{% endblock %}
+
+{% block body %}
+    <wa-breadcrumb>
+        <wa-breadcrumb-item href="{{ path('admin_categoria_index') }}">Categorias</wa-breadcrumb-item>
+        <wa-breadcrumb-item>{{ editando ? categoria.nome : 'Nova categoria' }}</wa-breadcrumb-item>
+    </wa-breadcrumb>
+
+    <h1 class="wa-heading-xl">{{ editando ? 'Editar categoria' : 'Nova categoria' }}</h1>
+
+    {{ form_start(form, {attr: {class: 'wa-stack wa-gap-l', novalidate: 'novalidate'}}) }}
+        {{ form_errors(form) }}
+
+        <wa-card>
+            <div class="wa-stack wa-gap-l">
+                {{ form_row(form.nome) }}
+                {{ form_row(form.cor) }}
+                {{ form_row(form.ativa) }}
+            </div>
+        </wa-card>
+
+        <div class="wa-cluster wa-gap-s">
+            <wa-button type="submit" variant="brand">
+                <wa-icon slot="start" name="floppy-disk"></wa-icon> {{ editando ? 'Salvar alterações' : 'Criar categoria' }}
+            </wa-button>
+            <wa-button appearance="plain" href="{{ path('admin_categoria_index') }}">Cancelar</wa-button>
+        </div>
+    {{ form_end(form) }}
+
+    {% if editando %}
+        <wa-divider></wa-divider>
+        <form method="post" action="{{ path('admin_categoria_excluir', {id: categoria.id}) }}"
+              data-turbo-confirm="Excluir a categoria “{{ categoria.nome }}”? Esta ação não pode ser desfeita.">
+            <input type="hidden" name="_token" value="{{ csrf_token('excluir' ~ categoria.id) }}">
+            <wa-button type="submit" variant="danger" appearance="outlined" size="s">
+                <wa-icon slot="start" name="trash"></wa-icon> Excluir categoria
+            </wa-button>
+        </form>
+    {% endif %}
+{% endblock %}

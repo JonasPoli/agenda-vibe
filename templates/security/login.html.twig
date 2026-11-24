@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt" class="wa-theme-default wa-palette-default wa-brand-indigo wa-light wa-cloak">
+    <head>
+        <title>Entrar · Admin {{ nome_site }}</title>
+        {% include 'admin/_head.html.twig' %}
+    </head>
+    <body>
+        <main class="admin-login wa-stack wa-align-items-center wa-justify-content-center">
+            <wa-card>
+                <div slot="header" class="wa-stack wa-gap-3xs">
+                    <h1 class="wa-heading-l"><wa-icon name="calendar-days" variant="regular"></wa-icon> {{ nome_site }}</h1>
+                    <span class="wa-caption-m">Área administrativa</span>
+                </div>
+
+                <form method="post" action="{{ path('admin_login') }}" class="wa-stack wa-gap-l" data-turbo="false">
+                    {% if erro %}
+                        <wa-callout variant="danger">
+                            <wa-icon slot="icon" name="triangle-exclamation"></wa-icon>
+                            {{ erro.messageKey|trans(erro.messageData, 'security') }}
+                        </wa-callout>
+                    {% endif %}
+
+                    <wa-input type="email" name="email" label="E-mail" value="{{ ultimo_usuario }}" autocomplete="username" required autofocus>
+                        <wa-icon slot="start" name="envelope"></wa-icon>
+                    </wa-input>
+                    <wa-input type="password" name="senha" label="Senha" autocomplete="current-password" password-toggle required>
+                        <wa-icon slot="start" name="lock"></wa-icon>
+                    </wa-input>
+                    <wa-checkbox name="_remember_me" value="on">Manter conectado neste computador</wa-checkbox>
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                    <wa-button type="submit" variant="brand">Entrar</wa-button>
+                </form>
+
+                <a slot="footer" href="{{ path('site_inicio') }}" class="wa-caption-s">← Voltar para o site</a>
+            </wa-card>
+        </main>
+    </body>
+</html>

@@ -1,11 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-        {% block stylesheets %}
-        {% endblock %}
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title %}{{ nome_site }}{% endblock %}</title>
+        <meta name="description" content="{% block descricao %}Agenda de eventos: shows, encontros, oficinas e tudo o que vale sair de casa.{% endblock %}">
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><rect width=%2264%22 height=%2264%22 rx=%2216%22 fill=%22%23e8552b%22/><text x=%2232%22 y=%2244%22 font-size=%2234%22 font-family=%22sans-serif%22 font-weight=%22700%22 text-anchor=%22middle%22 fill=%22white%22>a</text></svg>">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Inter:wght@400..700&display=swap">
+        {# Muda entre site e admin força recarga completa no Turbo (CSS e JS diferentes). #}
+        <meta name="agenda-area" content="site" data-turbo-track="reload">
+        {% block stylesheets %}{% endblock %}
 
         {% block javascripts %}
             {% block importmap %}{{ importmap('app') }}{% endblock %}
@@ -18,7 +24,29 @@
         <script src="https://cdn.jsdelivr.net/npm/frankenphp-hot-reload/+esm" type="module"></script>
         {% endif %}
     </head>
-    <body>
-        {% block body %}{% endblock %}
+    <body class="min-h-screen flex flex-col font-sans">
+        <header class="sticky top-0 z-20 border-b border-tinta/10 bg-papel/85 backdrop-blur">
+            <div class="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
+                <a href="{{ path('site_inicio') }}" class="font-display text-2xl font-extrabold tracking-tight">
+                    agenda<span class="text-vibe-500">·</span>vibe
+                </a>
+                <nav class="flex items-center gap-6 text-sm font-medium">
+                    <a href="{{ path('site_inicio') }}#agenda" class="hover:text-vibe-600">Agenda</a>
+                    <a href="{{ path('site_inicio') }}#agenda" class="rounded-full bg-tinta px-4 py-2 text-papel transition hover:bg-vibe-600">Ver eventos</a>
+                </nav>
+            </div>
+        </header>
+
+        <main class="flex-1">
+            {% block body %}{% endblock %}
+        </main>
+
+        <footer class="mt-24 bg-tinta text-papel/70">
+            <div class="mx-auto flex max-w-6xl flex-col gap-4 px-5 py-10 text-sm sm:flex-row sm:items-center sm:justify-between">
+                <p class="font-display text-lg font-bold text-papel">agenda<span class="text-vibe-400">·</span>vibe</p>
+                <p>© {{ 'now'|date('Y') }} {{ nome_site }}. Feito para quem gosta de sair de casa.</p>
+                <a href="{{ path('admin_dashboard') }}" class="hover:text-papel">Área administrativa</a>
+            </div>
+        </footer>
     </body>
 </html>

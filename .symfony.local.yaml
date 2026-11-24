@@ -1,0 +1,5 @@
+# Workers iniciados junto com "symfony server:start":
+# recompila o Tailwind automaticamente ao salvar templates e CSS.
+workers:
+    tailwind:
+        cmd: ['symfony', 'console', 'tailwind:build', '--watch']

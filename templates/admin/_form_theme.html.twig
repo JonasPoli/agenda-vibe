@@ -1,0 +1,89 @@
+{#
+    Tema de formulário do admin: renderiza os campos do Symfony Form como componentes Web Awesome.
+    Os componentes são "form-associated", então enviam o valor no POST como campos nativos.
+    Use com: {% form_theme form 'admin/_form_theme.html.twig' %}
+#}
+{% use 'form_div_layout.html.twig' %}
+
+{%- block form_row -%}
+    <div class="wa-stack wa-gap-2xs">
+        {{- form_widget(form) -}}
+        {{- form_errors(form) -}}
+    </div>
+{%- endblock form_row -%}
+
+{%- block form_errors -%}
+    {%- if errors|length > 0 -%}
+        {%- if compound -%}
+            <wa-callout variant="danger">
+                <wa-icon slot="icon" name="triangle-exclamation"></wa-icon>
+                {%- for error in errors %}{{ error.message }}{% if not loop.last %}<br>{% endif %}{% endfor -%}
+            </wa-callout>
+        {%- else -%}
+            {%- for error in errors -%}
+                <div class="admin-erro"><wa-icon name="circle-exclamation"></wa-icon> {{ error.message }}</div>
+            {%- endfor -%}
+        {%- endif -%}
+    {%- endif -%}
+{%- endblock form_errors -%}
+
+{%- block form_widget_simple -%}
+    {%- set type = type|default('text') -%}
+    {%- if type in ['hidden'] -%}
+        {{- parent() -}}
+    {%- else -%}
+        <wa-input type="{{ type }}" {{ block('widget_attributes') }}
+            label="{{ label is not same as(false) ? (label ?: name|humanize) }}"
+            {% if help %}hint="{{ help }}"{% endif %}
+            {% if value is not empty %}value="{{ value }}"{% endif %}
+            {% if errors|length > 0 %}data-invalido{% endif %}></wa-input>
+    {%- endif -%}
+{%- endblock form_widget_simple -%}
+
+{%- block textarea_widget -%}
+    <wa-textarea {{ block('widget_attributes') }} resize="auto"
+        label="{{ label ?: name|humanize }}"
+        {% if help %}hint="{{ help }}"{% endif %}
+        value="{{ value }}"></wa-textarea>
+{%- endblock textarea_widget -%}
+
+{%- block checkbox_widget -%}
+    <wa-switch {{ block('widget_attributes') }}
+        {% if value is defined %}value="{{ value }}"{% endif %}
+        {% if checked %}checked{% endif %}
+        {% if help %}hint="{{ help }}"{% endif %}>{{ label ?: name|humanize }}</wa-switch>
+{%- endblock checkbox_widget -%}
+
+{# Select simples (EntityType/ChoiceType sem "expanded"). Opções com data-cor ganham uma bolinha colorida. #}
+{%- block choice_widget_collapsed -%}
+    <wa-select {{ block('widget_attributes') }}
+        label="{{ label ?: name|humanize }}"
+        {% if help %}hint="{{ help }}"{% endif %}
+        {% if placeholder is not none %}placeholder="{{ placeholder }}"{% endif %}
+        {% if multiple %}multiple{% endif %}
+        value="{{ value is iterable ? value|join(' ') : value }}">
+        {%- for choice in choices -%}
+            {%- if choice is iterable -%}{# grupos não são usados no admin #}{%- else -%}
+                <wa-option value="{{ choice.value }}">
+                    {%- if choice.attr['data-cor'] is defined -%}
+                        <span slot="start" class="admin-cor" style="--cor: {{ choice.attr['data-cor'] }}"></span>
+                    {%- endif -%}
+                    {{ choice.label }}
+                </wa-option>
+            {%- endif -%}
+        {%- endfor -%}
+    </wa-select>
+{%- endblock choice_widget_collapsed -%}
+
+{# Cor (ColorType) com o seletor do Web Awesome e algumas cores prontas. #}
+{%- block color_widget -%}
+    <wa-color-picker {{ block('widget_attributes') }}
+        label="{{ label ?: name|humanize }}"
+        {% if help %}hint="{{ help }}"{% endif %}
+        format="hex" without-format-toggle value="{{ value }}"
+        swatches="#ef4444; #f97316; #eab308; #22c55e; #14b8a6; #0ea5e9; #6366f1; #a855f7; #ec4899; #64748b"></wa-color-picker>
+{%- endblock color_widget -%}
+
+{%- block submit_widget -%}
+    <wa-button type="submit" variant="brand" {{ block('widget_attributes') }}>{{ label ?: name|humanize }}</wa-button>
+{%- endblock submit_widget -%}
